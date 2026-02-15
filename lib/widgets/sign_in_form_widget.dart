@@ -6,8 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:inference/main.dart';
 import 'package:inference/provider/global_provider.dart';
-import 'package:inference/screens/home_screen.dart';
-import 'package:inference/screens/sign_up_screen.dart';
 import 'package:inference/services/supabase_auth.dart';
 import 'package:inference/validator/form_validator.dart';
 import 'package:inference/widgets/button_widget.dart';

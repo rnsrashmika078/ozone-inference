@@ -27,17 +27,7 @@ class _UserProfileBody extends ConsumerState<UserProfileBody> {
   @override
   void initState() {
     super.initState();
-    print("auth user from user profile $authUser");
-
-    // getMyUserData();
   }
-
-  // Future<void> getMyUserData() async {
-  //   final data = await getUserData(userId!);
-  //   setState(() {
-  //     _authUserData = data;
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -87,6 +77,7 @@ class _UserProfileBody extends ConsumerState<UserProfileBody> {
                     ),
                   ],
                 ),
+         
         ],
       ),
     );
