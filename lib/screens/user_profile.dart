@@ -27,17 +27,7 @@ class _UserProfileBody extends ConsumerState<UserProfileBody> {
   @override
   void initState() {
     super.initState();
-    print("auth user from user profile $authUser");
-
-    // getMyUserData();
   }
-
-  // Future<void> getMyUserData() async {
-  //   final data = await getUserData(userId!);
-  //   setState(() {
-  //     _authUserData = data;
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -75,15 +65,15 @@ class _UserProfileBody extends ConsumerState<UserProfileBody> {
                         fontSize: 20,
                       ),
                     ),
-                    Text(user?['email'], style: TextStyle(fontSize: 12)),
+                    Text(user?['email'], style: TextStyle(fontSize: 16)),
                   ],
                 )
               : Column(
                   children: [
                     Image.asset("assets/images/user2.png", width: 100),
-                    Text(
+                    const Text(
                       "You are not logged in!",
-                      style: const TextStyle(color: Colors.black),
+                      style: TextStyle(color: Colors.black),
                     ),
                   ],
                 ),

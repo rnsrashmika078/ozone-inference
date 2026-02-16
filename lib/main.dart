@@ -21,21 +21,19 @@ void main() async {
 
 final supabase = Supabase.instance.client;
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeProvider);
+
     return MaterialApp(
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
-        fontFamily: 'Poppins',
-      ),
-      home: AuthApp(),
+      theme:  ThemeData.light(),
+      home: const AuthApp(),
       debugShowCheckedModeBanner: false,
-      darkTheme: ThemeData.dark(),
-      themeMode: ThemeMode.system,
+      darkTheme:  ThemeData.dark(),
+      themeMode: themeMode,
     );
   }
 }
@@ -53,7 +51,20 @@ class _AuthApp extends ConsumerState<AuthApp> {
   @override
   void initState() {
     super.initState();
-    if (!mounted) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final session = supabase.auth.currentSession;
+      final meta = session?.user.userMetadata;
+
+      if (meta != null) {
+        ref.read(authUserProvider.notifier).state = {
+          'username': meta['name'] ?? '',
+          'email': meta['email'],
+          'dp': meta['avatar_url'],
+        };
+        setState(() => _authUserData = meta);
+      }
+    });
     supabase.auth.onAuthStateChange.listen((data) async {
       final user = data.session?.user;
       final newUserData = data.session?.user.userMetadata;
@@ -81,10 +92,11 @@ class _AuthApp extends ConsumerState<AuthApp> {
 
   @override
   Widget build(BuildContext context) {
+    final Map<String, dynamic> chatDetails = ref.watch(chatProvider);
     return Scaffold(
-      drawer: CustomDrawer(),
-      appBar: CustomAppBar(title: "Ozone"),
-      body: Center(
+      drawer: const CustomDrawer(),
+      appBar:  CustomAppBar(title: chatDetails['title'] ?? "Welcome"),
+      body:  Center(
         child: _authUserData == null
             // ? HomeScreen(authUserData: _authUserData)
             ? SignUpScreen()

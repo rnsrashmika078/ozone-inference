@@ -13,7 +13,7 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreen extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       drawer: CustomDrawer(),
       appBar: CustomAppBar(title: "Ozone"),
       body: Padding(

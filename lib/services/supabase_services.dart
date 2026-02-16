@@ -1,6 +1,9 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-
 import 'package:inference/main.dart';
+
+Future<List<Map<String, dynamic>>> getAllUsers() async {
+  return await supabase.from(dotenv.env['SUPABASE_TABLE']!).select();
+}
 
 Future<void> insertData(
   String? userId,
@@ -8,7 +11,6 @@ Future<void> insertData(
   String? username,
   String? dp,
 ) async {
- 
   await supabase.from(dotenv.env['SUPABASE_TABLE']!).upsert({
     'user_id': userId,
     'email': email,
@@ -30,6 +32,52 @@ Future<Map<String, dynamic>?> getUserData(String userId) async {
   return null;
 }
 
-Future<List<Map<String, dynamic>>> getAllUsers() async {
-  return await supabase.from(dotenv.env['SUPABASE_TABLE']!).select();
+Future<void> createChat(uId, String cId, String title) async {
+  await supabase.from('chats').upsert({
+    'uId': uId,
+    'cId': cId,
+    'title': title,
+  }, onConflict: 'cId');
+}
+
+Future<void> createMessage(
+  String cId,
+  String mId,
+  String role,
+  String message,
+) async {
+  await supabase.from('messages').insert({
+    'cId': cId,
+    'mId': mId,
+    'role': role,
+    'message': message,
+  });
+}
+
+Future<List<Map<String, dynamic>>> getChats(String uId) async {
+  List<Map<String, dynamic>> chats = await supabase
+      .from('chats')
+      .select('cId,title,uId')
+      .eq('uId', uId);
+
+  if (chats.isNotEmpty) {
+    return chats;
+  }
+  return [];
+}
+
+Future<void> deleteChat(String cId) async {
+  await supabase.from('chats').delete().eq('cId', cId).select();
+}
+
+Future<List<Map<String, dynamic>>> getMessages(String cId) async {
+  List<Map<String, dynamic>> messages = await supabase
+      .from('messages')
+      .select('cId, mId,message,role')
+      .eq('cId', cId);
+
+  if (messages.isNotEmpty) {
+    return messages;
+  }
+  return [];
 }
