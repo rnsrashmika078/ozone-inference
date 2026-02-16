@@ -4,11 +4,14 @@ import 'package:inference/main.dart';
 import 'package:inference/provider/global_provider.dart';
 import 'package:inference/services/groq_service.dart';
 import 'package:inference/services/supabase_services.dart';
+import 'package:inference/widgets/custom_app_bar.dart';
+import 'package:inference/widgets/custom_drawer.dart';
 import 'package:uuid/uuid.dart';
 
 class ChatArea extends ConsumerStatefulWidget {
-  const ChatArea({super.key});
-
+  final String? passedCId;
+  final String? title;
+  const ChatArea({super.key, this.passedCId, this.title});
   @override
   ConsumerState<ChatArea> createState() => _ChatAreaState();
 }
@@ -23,6 +26,7 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
   @override
   void initState() {
     super.initState();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       _loadMessage();
@@ -30,9 +34,7 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
   }
 
   Future<void> _loadMessage() async {
-    List<Map<String, dynamic>> data = await getMessages(
-      "a41ba458-d906-4a82-97d3-ae2eb04546af",
-    );
+    List<Map<String, dynamic>> data = await getMessages(widget.passedCId ?? "");
     if (!mounted) [];
     setState(() {
       messages = data;
@@ -41,68 +43,109 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<String?>(deletedChatId, (prev, next) {
+      if (next == null) return;
+
+      if (widget.passedCId == next || cId == next) {
+        setState(() {
+          messages.clear();
+          title = "New Chat";
+        });
+        if (mounted) Navigator.pop(context);
+      }
+    });
     final user = ref.watch(authUserProvider);
     final userName = user?["username"];
     final uuid = Uuid();
-    print("user id:  $uId");
-
     final system =
         "You are a helpful AI assistant. Answer short and clearly.user name: $userName";
     return Scaffold(
+      appBar: widget.passedCId != null
+          ? CustomAppBar(title: title ?? widget.title ?? "")
+          : null,
+      drawer: widget.passedCId != null ? const CustomDrawer() : null,
       body: Padding(
-        padding: EdgeInsets.all(0),
+        padding: const EdgeInsets.all(0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 47, 47, 47),
-              ),
-              child: title != null
-                  ? Text(
-                      title ?? "",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    )
-                  : null,
-            ),
             Expanded(
-              child: ListView.builder(
-                itemCount: messages.length,
-                itemBuilder: (context, index) {
-                  final msg = messages[index];
-                  return Align(
-                    alignment: msg['role'] == "user"
-                        ? Alignment.centerRight
-                        : Alignment.centerLeft,
-                    child: Container(
-                      margin: EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: msg['role'] == "user"
-                            ? const Color.fromARGB(255, 51, 51, 51)
-                            : const Color.fromARGB(255, 0, 0, 0),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.all(12),
-                        child: Text(
-                          msg['message'] ?? "",
-                          style: TextStyle(fontSize: 18, color: Colors.white),
+              child: messages.isNotEmpty
+                  ? ListView.builder(
+                      itemCount: messages.length,
+                      itemBuilder: (context, index) {
+                        final msg = messages[index];
+                        return Align(
+                          alignment: msg['role'] == "user"
+                              ? Alignment.centerRight
+                              : Alignment.centerLeft,
+                          child: Container(
+                            margin: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: msg['role'] == "user"
+                                  ? const Color.fromARGB(255, 51, 51, 51)
+                                  : const Color.fromARGB(255, 0, 0, 0),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Text(
+                                msg['message'] ?? "",
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    )
+                  : Padding(
+                      padding: EdgeInsets.all(50),
+                      child: Container(
+                        alignment: Alignment.center,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Meet Ozone. Your personal AI assistant. ",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                                fontStyle: FontStyle.italic,
+                              ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "I'm all yours ",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: const Color.fromARGB(
+                                      255,
+                                      108,
+                                      108,
+                                      108,
+                                    ),
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                ),
+                                Icon(Icons.cloud),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                  );
-                },
-              ),
             ),
             Padding(
-              padding: EdgeInsets.all(12),
+              padding: const EdgeInsets.all(12),
               child: TextField(
                 onSubmitted: (value) async {
                   setState(() {
@@ -123,10 +166,15 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
                   });
                   if (messages.length == 1) {
                     final id = uuid.v4();
+                    ref.read(isMutated.notifier).state = true;
                     setState(() {
                       cId = id;
                     });
-                    await createChat(uId, id, title!);
+                    ref.read(chatProvider.notifier).state = {
+                      'cId': cId,
+                      'title': title,
+                    };
+                    await createChat(uId, id, title ?? "");
                   }
                   setState(() {
                     messages.add({
@@ -137,8 +185,18 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
                   });
                   // save message to db
                   await Future.wait([
-                    createMessage(cId!, uuid.v4(), 'user', value),
-                    createMessage(cId!, uuid.v4(), 'assistant', reply['reply']),
+                    createMessage(
+                      cId ?? widget.passedCId ?? "",
+                      uuid.v4(),
+                      'user',
+                      value,
+                    ),
+                    createMessage(
+                      cId ?? widget.passedCId ?? "",
+                      uuid.v4(),
+                      'assistant',
+                      reply['reply'] ?? "",
+                    ),
                   ]);
 
                   textInputController.clear();
@@ -146,7 +204,7 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
                 controller: textInputController,
                 decoration: InputDecoration(
                   hintText: "What's on your mind?",
-                  prefixIcon: Icon(Icons.add),
+                  prefixIcon: const Icon(Icons.add),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),

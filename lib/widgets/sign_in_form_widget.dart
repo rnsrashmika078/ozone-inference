@@ -50,7 +50,7 @@ class _SignInForm extends ConsumerState<SignInForm> {
     return Form(
       key: _formKey,
       child: Padding(
-        padding: EdgeInsetsGeometry.all(20),
+        padding: const EdgeInsetsGeometry.all(20),
         child: Column(
           spacing: 14,
           children: [
@@ -77,7 +77,10 @@ class _SignInForm extends ConsumerState<SignInForm> {
               buttonText: "Continue to Login",
               onPressed: signIn,
             ),
-            Text("OR", style: TextStyle(color: Colors.grey, fontSize: 16)),
+            const Text(
+              "OR",
+              style: TextStyle(color: Colors.grey, fontSize: 16),
+            ),
             // sign in with google
             CustomButton(
               backgroundColor: Colors.black,
@@ -98,16 +101,16 @@ class _SignInForm extends ConsumerState<SignInForm> {
                 }
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => MyApp()),
+                  MaterialPageRoute(builder: (context) => const MyApp()),
                 );
               },
               buttonIcon: ("assets/images/google_2.png"),
             ),
-            Row(
+             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               spacing: 5,
               children: [
-                Text(
+                const Text(
                   "Don't have an account?",
                   style: TextStyle(color: Colors.grey, fontSize: 16),
                 ),

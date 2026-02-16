@@ -29,10 +29,10 @@ class MyApp extends ConsumerWidget {
     final themeMode = ref.watch(themeProvider);
 
     return MaterialApp(
-      theme: ThemeData.light(),
-      home: AuthApp(),
+      theme:  ThemeData.light(),
+      home: const AuthApp(),
       debugShowCheckedModeBanner: false,
-      darkTheme: ThemeData.dark(),
+      darkTheme:  ThemeData.dark(),
       themeMode: themeMode,
     );
   }
@@ -92,10 +92,11 @@ class _AuthApp extends ConsumerState<AuthApp> {
 
   @override
   Widget build(BuildContext context) {
+    final Map<String, dynamic> chatDetails = ref.watch(chatProvider);
     return Scaffold(
-      drawer: CustomDrawer(),
-      appBar: CustomAppBar(title: "Ozone"),
-      body: Center(
+      drawer: const CustomDrawer(),
+      appBar:  CustomAppBar(title: chatDetails['title'] ?? "Welcome"),
+      body:  Center(
         child: _authUserData == null
             // ? HomeScreen(authUserData: _authUserData)
             ? SignUpScreen()

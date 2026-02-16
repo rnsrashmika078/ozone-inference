@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:inference/provider/global_provider.dart';
-import 'package:inference/widgets/custom_app_bar.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -18,16 +17,16 @@ class _SettingScreenState extends ConsumerState<SettingsScreen> {
     return Scaffold(
       appBar: AppBar(automaticallyImplyLeading: true),
       body: Padding(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               "Settings",
               style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Container(
               width: double.infinity,
               decoration: BoxDecoration(
@@ -35,7 +34,7 @@ class _SettingScreenState extends ConsumerState<SettingsScreen> {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Padding(
-                padding: EdgeInsets.all(12),
+                padding: const EdgeInsets.all(12),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -46,8 +45,8 @@ class _SettingScreenState extends ConsumerState<SettingsScreen> {
                           color: Colors.black,
                           size: 30,
                         ),
-                        SizedBox(width: 16),
-                        Text(
+                        const SizedBox(width: 16),
+                        const Text(
                           "Dark mode",
                           style: TextStyle(color: Colors.black, fontSize: 26),
                         ),

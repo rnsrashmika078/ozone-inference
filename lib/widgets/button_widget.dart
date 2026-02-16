@@ -30,7 +30,7 @@ class _CustomButton extends State<CustomButton> {
     return ElevatedButton(
       onPressed: widget.onPressed,
       style: ElevatedButton.styleFrom(
-        minimumSize: Size(double.infinity, 48),
+        minimumSize: const Size(double.infinity, 48),
         backgroundColor: widget.backgroundColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),

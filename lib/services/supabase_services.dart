@@ -66,6 +66,10 @@ Future<List<Map<String, dynamic>>> getChats(String uId) async {
   return [];
 }
 
+Future<void> deleteChat(String cId) async {
+  await supabase.from('chats').delete().eq('cId', cId).select();
+}
+
 Future<List<Map<String, dynamic>>> getMessages(String cId) async {
   List<Map<String, dynamic>> messages = await supabase
       .from('messages')

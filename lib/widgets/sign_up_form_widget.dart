@@ -53,7 +53,7 @@ class _SignUpForm extends ConsumerState<SignUpForm> {
     return Form(
       key: _formKey,
       child: Padding(
-        padding: EdgeInsetsGeometry.all(20),
+        padding: const EdgeInsetsGeometry.all(20),
         child: Column(
           spacing: 14,
           children: [
@@ -88,7 +88,10 @@ class _SignUpForm extends ConsumerState<SignUpForm> {
               buttonText: "Create Account",
               onPressed: submitForm,
             ),
-            Text("OR", style: TextStyle(color: Colors.grey, fontSize: 16)),
+            const Text(
+              "OR",
+              style: TextStyle(color: Colors.grey, fontSize: 16),
+            ),
             // sign in with google
             CustomButton(
               backgroundColor: Colors.black,
@@ -101,10 +104,6 @@ class _SignUpForm extends ConsumerState<SignUpForm> {
                   if (!context.mounted) {
                     return;
                   }
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(builder: (context) => UserProfile()),
-                  // );
                 } else {
                   await supabase.auth.signInWithOAuth(OAuthProvider.google);
                 }
@@ -115,7 +114,7 @@ class _SignUpForm extends ConsumerState<SignUpForm> {
               mainAxisAlignment: MainAxisAlignment.center,
               spacing: 5,
               children: [
-                Text(
+                const Text(
                   "Don't have an account?",
                   style: TextStyle(color: Colors.grey, fontSize: 16),
                 ),
