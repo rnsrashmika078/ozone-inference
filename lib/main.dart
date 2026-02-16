@@ -11,7 +11,7 @@ import 'package:inference/widgets/custom_drawer.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load();
+  await dotenv.load(fileName: ".env");
   await Supabase.initialize(
     url: dotenv.env['SUPABASE_URL']!,
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
@@ -29,10 +29,10 @@ class MyApp extends ConsumerWidget {
     final themeMode = ref.watch(themeProvider);
 
     return MaterialApp(
-      theme:  ThemeData.light(),
+      theme: ThemeData.light(),
       home: const AuthApp(),
       debugShowCheckedModeBanner: false,
-      darkTheme:  ThemeData.dark(),
+      darkTheme: ThemeData.dark(),
       themeMode: themeMode,
     );
   }
@@ -95,8 +95,8 @@ class _AuthApp extends ConsumerState<AuthApp> {
     final Map<String, dynamic> chatDetails = ref.watch(chatProvider);
     return Scaffold(
       drawer: const CustomDrawer(),
-      appBar:  CustomAppBar(title: chatDetails['title'] ?? "Welcome"),
-      body:  Center(
+      appBar: CustomAppBar(title: chatDetails['title'] ?? "Welcome"),
+      body: Center(
         child: _authUserData == null
             // ? HomeScreen(authUserData: _authUserData)
             ? SignUpScreen()

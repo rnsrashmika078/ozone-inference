@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 Future<Map<String, dynamic>> sendMessage(
@@ -8,8 +9,10 @@ Future<Map<String, dynamic>> sendMessage(
   bool isFirst,
   history,
 ) async {
+
+
   final response = await http.post(
-    Uri.parse("http://10.0.2.2:3000/api/generate/chat"),
+    Uri.parse("${dotenv.env['PRODUCTION']}/api/generate/chat"),
     headers: {"Content-Type": "application/json"},
     body: jsonEncode({
       "prompt": prompt,
