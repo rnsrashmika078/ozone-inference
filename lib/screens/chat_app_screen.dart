@@ -1,11 +1,15 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:inference/main.dart';
 import 'package:inference/provider/global_provider.dart';
 import 'package:inference/services/groq_service.dart';
 import 'package:inference/services/supabase_services.dart';
 import 'package:inference/widgets/custom_app_bar.dart';
 import 'package:inference/widgets/custom_drawer.dart';
+import 'package:inference/widgets/image_picker_widget.dart';
 import 'package:uuid/uuid.dart';
 
 class ChatArea extends ConsumerStatefulWidget {
@@ -39,6 +43,17 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
     setState(() {
       messages = data;
     });
+  }
+
+  final picker = ImagePicker();
+  File? selectedImage;
+
+  Future<File?> pickImage() async {
+    final picked = await picker.pickImage(source: ImageSource.gallery);
+    if (picked != null) {
+      return File(picked.path);
+    }
+    return null;
   }
 
   @override
@@ -144,6 +159,38 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
                       ),
                     ),
             ),
+            selectedImage != null
+                ? Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.black),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Align(
+                          alignment: Alignment.topLeft,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Image.file(selectedImage!, width: 50, height: 50),
+                              IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    selectedImage = null;
+                                  });
+                                },
+                                icon: Icon(Icons.close),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                : SizedBox(),
+
             Padding(
               padding: const EdgeInsets.all(12),
               child: TextField(
@@ -204,7 +251,15 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
                 controller: textInputController,
                 decoration: InputDecoration(
                   hintText: "What's on your mind?",
-                  prefixIcon: const Icon(Icons.add),
+                  prefixIcon: IconButton(
+                    onPressed: () async {
+                      File? file = await pickImage();
+                      setState(() {
+                        selectedImage = file;
+                      });
+                    },
+                    icon: const Icon(Icons.add),
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
